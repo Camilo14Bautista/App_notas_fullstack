@@ -1,0 +1,23 @@
+import jwt from "jsonwebtoken";
+import { TOKEN_SECRET } from "../config.js";
+
+export const authRequired = (req, res, next) => {
+  const { token } = req.cookies;
+
+  if (!token)
+    return res
+      .status(401)
+      .json({ message: "No se encuentra un token, por favor inicie sesion" });
+
+  jwt.verify(token, TOKEN_SECRET, (err, user) => {
+    if (err)
+      return res
+        .status(403)
+        .json({ message: "Token invalido, por favor intente nuevamente" });
+    // console.log(user);
+
+    req.user = user;
+
+    next();
+  });
+};
